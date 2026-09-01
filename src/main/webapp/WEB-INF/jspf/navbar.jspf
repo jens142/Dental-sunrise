@@ -1,0 +1,210 @@
+<%@ page import="com.sunrisedental.model.User" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+    User navUser = (User) session.getAttribute("currentUser");
+    boolean navIsAdmin = navUser != null && navUser.getRole() == User.Role.ADMIN;
+    request.setAttribute("navIsAdmin", navIsAdmin);
+    String navInitials = "?";
+    if (navUser != null && navUser.getFullName() != null) {
+        String[] navParts = navUser.getFullName().trim().split("\\s+");
+        StringBuilder navInitialsBuilder = new StringBuilder();
+        for (int i = 0; i < navParts.length && i < 2; i++) {
+            if (navParts[i].length() > 0) navInitialsBuilder.append(Character.toUpperCase(navParts[i].charAt(0)));
+        }
+        if (navInitialsBuilder.length() > 0) navInitials = navInitialsBuilder.toString();
+    }
+%>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('sdc-theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));</script>
+
+<header class="app-header">
+    <div class="header-left">
+        <button type="button" class="sidebar-toggle-btn no-print" id="sidebarToggleBtn" title="Toggle sidebar" aria-label="Toggle sidebar">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="brand">
+            <img src="${pageContext.request.contextPath}/images/tooth-icon.png" alt="Sunrise Dental Clinic">
+            <span>Sunrise Dental Clinic</span>
+        </div>
+    </div>
+
+    <button type="button" class="header-search-trigger no-print" id="commandPaletteTrigger">
+        <span class="material-symbols-outlined">search</span>
+        <span>Search pages &amp; actions...</span>
+        <kbd>Ctrl K</kbd>
+    </button>
+
+    <div class="header-right">
+        <span class="header-clock no-print" id="headerClock"></span>
+
+        <div class="theme-toggle-wrap no-print" title="Toggle dark mode">
+            <span class="material-symbols-outlined">light_mode</span>
+            <label class="switch">
+                <input type="checkbox" class="theme-toggle-input" id="themeToggleInput" onchange="sdcToggleTheme()">
+                <span class="switch-track"></span>
+            </label>
+            <span class="material-symbols-outlined">dark_mode</span>
+        </div>
+
+        <div style="position:relative;" class="no-print">
+            <button type="button" class="header-icon-btn" id="notifTrigger" aria-label="Notifications">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="notif-dot"></span>
+            </button>
+            <div class="dropdown-panel" id="notifPanel">
+                <div class="dropdown-header">
+                    <span>Notifications</span>
+                    <span class="badge badge-info">3 new</span>
+                </div>
+                <div class="dropdown-body">
+                    <div class="dropdown-item">
+                        <span class="dot"></span>
+                        <div>
+                            <div>Appointment reminders go out automatically 24 hours ahead.</div>
+                            <div class="text-faint text-xs" style="margin-top:4px;">Notification service</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-item">
+                        <span class="dot" style="background:var(--color-secondary);"></span>
+                        <div>
+                            <div>Today's schedule is ready for review.</div>
+                            <div class="text-faint text-xs" style="margin-top:4px;">Front desk</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-item">
+                        <span class="dot" style="background:var(--color-accent-dark);"></span>
+                        <div>
+                            <div>Unpaid invoices older than 7 days should be followed up.</div>
+                            <div class="text-faint text-xs" style="margin-top:4px;">Billing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="user-block">
+            <div class="user-avatar"><%= navInitials %></div>
+            <span class="user-info">
+                <c:if test="${not empty navUser}">${navUser.fullName}<span class="user-role">${navUser.role}</span></c:if>
+            </span>
+        </div>
+        <a href="${pageContext.request.contextPath}/logout" class="logout-link no-print" title="Log out">
+            <span class="material-symbols-outlined text-sm">logout</span>
+            <span>Logout</span>
+        </a>
+    </div>
+</header>
+
+<aside class="app-sidebar no-print">
+    <p class="sidebar-section-label">Workspace</p>
+    <nav>
+        <a href="${pageContext.request.contextPath}/dashboard.jsp"
+           class="nav-item ${pageTitle == 'Dashboard' ? 'active' : ''}">
+            <span class="material-symbols-outlined">space_dashboard</span> <span>Dashboard</span>
+        </a>
+        <a href="${pageContext.request.contextPath}/appointments/schedule"
+           class="nav-item ${pageTitle == 'Appointments' ? 'active' : ''}">
+            <span class="material-symbols-outlined">calendar_month</span> <span>Appointments</span>
+        </a>
+        <a href="${pageContext.request.contextPath}/patients"
+           class="nav-item ${pageTitle == 'Patients' ? 'active' : ''}">
+            <span class="material-symbols-outlined">group</span> <span>Patients</span>
+        </a>
+        <a href="${pageContext.request.contextPath}/appointments"
+           class="nav-item ${pageTitle == 'New Appointment' ? 'active' : ''}">
+            <span class="material-symbols-outlined">add_circle</span> <span>New Appointment</span>
+        </a>
+        <a href="${pageContext.request.contextPath}/billing"
+           class="nav-item ${pageTitle == 'Billing & Payments' ? 'active' : ''}">
+            <span class="material-symbols-outlined">payments</span> <span>Billing</span>
+        </a>
+        <c:if test="${navIsAdmin}">
+        <a href="${pageContext.request.contextPath}/admin/catalog"
+           class="nav-item ${pageTitle == 'Admin Catalog' ? 'active' : ''}">
+            <span class="material-symbols-outlined">medical_services</span> <span>Clinic Catalog</span>
+        </a>
+        <a href="${pageContext.request.contextPath}/reports"
+           class="nav-item ${pageTitle == 'Reports & Analytics' ? 'active' : ''}">
+            <span class="material-symbols-outlined">analytics</span> <span>Reports</span>
+        </a>
+        </c:if>
+    </nav>
+    <div class="sidebar-footer-card">
+        <strong style="color:var(--color-text);">Need help?</strong>
+        <p style="margin-top:4px;">Press <strong>Ctrl K</strong> anywhere to jump to a page instantly.</p>
+    </div>
+</aside>
+
+<div class="command-palette-overlay" id="commandPaletteOverlay">
+    <div class="command-palette">
+        <div class="command-palette-input-row">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="commandPaletteInput" placeholder="Jump to a page...">
+            <kbd>Esc</kbd>
+        </div>
+        <div class="command-palette-results" id="commandPaletteResults"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="idleWarningModal">
+    <div class="modal-box idle-warning-box">
+        <button type="button" class="modal-close-btn" id="idleStayBtn" aria-label="Stay signed in">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <h3>Still there?</h3>
+        <p>You've been inactive for a while. For your security, you'll be signed out automatically.</p>
+        <div class="idle-countdown" id="idleCountdown">60</div>
+        <button type="button" class="btn btn-primary btn-block" id="idleStayBtn2">
+            Stay signed in
+        </button>
+    </div>
+</div>
+
+<div class="toast-stack no-print" id="toastStack"></div>
+<button type="button" class="back-to-top no-print" id="backToTopBtn" aria-label="Back to top">
+    <span class="material-symbols-outlined">arrow_upward</span>
+</button>
+
+<script src="${pageContext.request.contextPath}/js/theme.js"></script>
+<script src="${pageContext.request.contextPath}/js/toast.js"></script>
+<script src="${pageContext.request.contextPath}/js/app-shell.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        initHeaderClock('headerClock');
+        initDropdown('notifTrigger', 'notifPanel');
+        initBackToTop();
+
+        var themeInput = document.getElementById('themeToggleInput');
+        if (themeInput) {
+            themeInput.checked = document.documentElement.getAttribute('data-theme') === 'dark';
+        }
+
+        var sidebarBtn = document.getElementById('sidebarToggleBtn');
+        if (sidebarBtn) sidebarBtn.addEventListener('click', sdcToggleSidebar);
+
+        var idleStayBtn2 = document.getElementById('idleStayBtn2');
+        if (idleStayBtn2) {
+            idleStayBtn2.addEventListener('click', function () {
+                document.getElementById('idleWarningModal').classList.remove('open');
+                document.dispatchEvent(new Event('mousemove'));
+            });
+        }
+
+        initCommandPalette([
+            { label: 'Dashboard', icon: 'space_dashboard', href: '${pageContext.request.contextPath}/dashboard.jsp' },
+            { label: 'Appointments', icon: 'calendar_month', href: '${pageContext.request.contextPath}/appointments' },
+            { label: 'New Appointment', icon: 'add_circle', href: '${pageContext.request.contextPath}/appointments' },
+            { label: 'Billing & Payments', icon: 'payments', href: '${pageContext.request.contextPath}/billing' },
+            <c:if test="${navIsAdmin}">
+            { label: 'Clinic Catalog', icon: 'medical_services', href: '${pageContext.request.contextPath}/admin/catalog' },
+            { label: 'Reports & Analytics', icon: 'analytics', href: '${pageContext.request.contextPath}/reports' },
+            </c:if>
+            { label: 'Logout', icon: 'logout', href: '${pageContext.request.contextPath}/logout' }
+        ]);
+
+        initIdleTimeout(20, '${pageContext.request.contextPath}/logout');
+    });
+</script>
