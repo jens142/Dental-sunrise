@@ -1,0 +1,99 @@
+.login-shell { display: flex; min-height: 100vh; }
+
+.login-hero {
+    position: relative;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 55%;
+    padding: 48px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #005d90 0%, #006875 100%);
+}
+.login-hero .hero-image {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0.4;
+}
+.login-hero .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(25,28,30,0.85), rgba(25,28,30,0.25) 60%, transparent);
+}
+.login-hero .hero-badge {
+    position: absolute; top: 32px; left: 48px; z-index: 1;
+    display: flex; align-items: center; gap: 8px;
+}
+.login-hero .hero-badge .line { width: 40px; height: 2px; background: #4cd6fb; border-radius: 999px; }
+.login-hero .hero-badge span { font-size: 0.7rem; color: #b3ebff; text-transform: uppercase; letter-spacing: 0.12em; }
+.login-hero .hero-text { position: relative; z-index: 1; max-width: 480px; margin-bottom: 32px; display: flex; flex-direction: column; gap: 16px; }
+.login-hero .hero-icon { color: #fff; font-size: 48px; opacity: 0.9; }
+.login-hero h1 { font-size: 2.25rem; font-weight: 800; color: #fff; line-height: 1.2; letter-spacing: -0.01em; }
+.login-hero p { color: rgba(255,255,255,0.8); font-size: 1.1rem; }
+
+.hero-stats { position: relative; z-index: 1; display: flex; gap: 32px; margin-bottom: 8px; }
+.hero-stats .hero-stat-value { font-size: 1.5rem; font-weight: 800; color: #fff; }
+.hero-stats .hero-stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+@media (min-width: 1024px) {
+    .login-hero { display: flex; }
+    .login-panel { width: 45%; }
+}
+
+.login-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    background: var(--color-surface);
+}
+@media (min-width: 640px) { .login-panel { padding: 64px; } }
+
+.login-form-wrap { width: 100%; max-width: 400px; }
+.login-form-wrap .login-logo { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; margin-bottom: 24px; }
+.login-header { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 32px; }
+@media (min-width: 640px) { .login-header { align-items: flex-start; text-align: left; } }
+.login-header h2 { font-size: 1.85rem; font-weight: 800; color: var(--color-text); margin-bottom: 4px; letter-spacing: -0.01em; }
+.login-header p { color: var(--color-text-muted); }
+
+#loginForm { display: flex; flex-direction: column; gap: 20px; }
+
+.login-options-row { display: flex; align-items: center; justify-content: space-between; margin-top: -8px; }
+.forgot-link { font-size: 0.82rem; font-weight: 600; color: var(--color-primary); }
+.forgot-link:hover { text-decoration: underline; }
+
+.toggle-password-btn {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--color-text-faint);
+}
+.toggle-password-btn:hover { color: var(--color-text-muted); }
+
+.login-footer {
+    margin-top: 40px; padding-top: 24px;
+    border-top: 1px solid var(--color-border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+}
+.login-footer .copyright { font-size: 0.75rem; color: var(--color-text-faint); }
+.login-footer .secure-badge {
+    display: flex; align-items: center; gap: 4px;
+    color: var(--color-text-faint);
+    padding: 4px 10px;
+    background: var(--color-bg);
+    border-radius: var(--radius-full);
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em;
+}
+.login-footer .secure-badge .material-symbols-outlined { font-size: 14px; }
+
+.login-theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 5; display: flex; align-items: center; gap: 8px; background: var(--color-surface); padding: 8px 12px; border-radius: var(--radius-full); box-shadow: var(--shadow-sm); }
+.login-theme-toggle .material-symbols-outlined { font-size: 16px; color: var(--color-text-faint); }
+
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+#loginForm > div, #loginForm > button { animation: fadeSlideUp 0.4s ease both; }
+#loginForm > div:nth-child(1) { animation-delay: 0.05s; }
+#loginForm > div:nth-child(2) { animation-delay: 0.1s; }
+#loginForm > button { animation-delay: 0.15s; }
